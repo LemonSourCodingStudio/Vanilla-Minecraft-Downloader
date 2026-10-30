@@ -18,6 +18,31 @@ def import_folders_from_pcl2(config_data, launcher_path):
             set_default = False
         case _:
             raise ValueError(f"“导入时设置默认文件夹”的值非法：{config_data['set_default_folder_when_import']}！")
+    
+    minecraft_folders=load_config()["minecraft_folders"]
+    appdata_minecraft_folder=os.path.expandvars(r"%APPDATA%\.minecraft")
+    print(minecraft_folders,appdata_minecraft_folder)
+    try:
+        add_minecraft_folder(config_data,f"{launcher_path}{os.sep}.minecraft")
+    except:
+        print("启动器目录下的.minecraft文件夹不存在！", file = sys.stderr)
+    else:
+        print("成功导入了启动器目录下的.minecraft文件夹！", file = sys.stderr)
+        success_imported_count+=1
+    # not_appdata_minecraft_folder_times=0
+    # for i in minecraft_folders:
+    #     if os.path.expandvars(i[0])==appdata_minecraft_folder:
+    #         print(r"%APPDATA%下的.minecraft文件夹已经添加！", file = sys.stderr)
+    #         break
+    #     else:
+    #             not_appdata_minecraft_folder_times+=1
+    # if not_appdata_minecraft_folder_times==len(minecraft_folders):
+    #     add_minecraft_folder(config_data,appdata_minecraft_folder)
+    #     print("成功导入了官启目录下的.minecraft文件夹！", file = sys.stderr)
+    #     success_imported_count+=1
+    # else:
+    #     print(r"%APPDATA%下的.minecraft文件夹已经添加！", file = sys.stderr)
+
     if os.path.exists(f"{launcher_path}{os.sep}PCL"):
         try:
             pcl_setup = configparser.ConfigParser(allow_unnamed_section = True)
@@ -39,7 +64,7 @@ def import_folders_from_pcl2(config_data, launcher_path):
             folder_path = folder.split('>')
             if len(folder_path) == 2 and folder_path[1]:
                 folder_list.append(folder_path[1])
-        if len(folder_list) == 0:
+        if len(folder_list) == 0 and not success_imported_count:
             print("PCL2 没有任何合法的 Minecraft 文件夹！", file = sys.stderr)
             os.system("pause")
             return config_data
