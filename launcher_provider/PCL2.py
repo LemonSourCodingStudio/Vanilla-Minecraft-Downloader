@@ -19,8 +19,8 @@ def import_folders_from_pcl2(config_data, launcher_path):
         case _:
             raise ValueError(f"“导入时设置默认文件夹”的值非法：{config_data['set_default_folder_when_import']}！")
     
-    # minecraft_folders=load_config()["minecraft_folders"]
-    # appdata_minecraft_folder=os.path.expandvars(r"%APPDATA%\.minecraft")
+    minecraft_folders=load_config()["minecraft_folders"]
+    appdata_minecraft_folder=os.path.expandvars(r"%APPDATA%\.minecraft")
     print(config_data)
     if os.path.exists(f"{launcher_path}{os.sep}.minecraft") and not check_folder_exists(config_data,f"{launcher_path}{os.sep}.minecraft"):
         add_minecraft_folder(config_data,f"{launcher_path}{os.sep}.minecraft")
@@ -28,19 +28,13 @@ def import_folders_from_pcl2(config_data, launcher_path):
         success_imported_count+=1 
     else:
         print("启动器目录下的.minecraft文件夹不存在或已被添加！", file = sys.stderr)
-    # not_appdata_minecraft_folder_times=0
-    # for i in minecraft_folders:
-    #     if os.path.expandvars(i[0])==appdata_minecraft_folder:
-    #         print(r"%APPDATA%下的.minecraft文件夹已经添加！", file = sys.stderr)
-    #         break
-    #     else:
-    #             not_appdata_minecraft_folder_times+=1
-    # if not_appdata_minecraft_folder_times==len(minecraft_folders):
-    #     add_minecraft_folder(config_data,appdata_minecraft_folder)
-    #     print("成功导入了官启目录下的.minecraft文件夹！", file = sys.stderr)
-    #     success_imported_count+=1
-    # else:
-    #     print(r"%APPDATA%下的.minecraft文件夹已经添加！", file = sys.stderr)
+
+    if not check_folder_exists(config_data,appdata_minecraft_folder):
+        add_minecraft_folder(config_data,appdata_minecraft_folder)
+        print("成功导入了官启目录下的.minecraft文件夹！", file = sys.stderr)
+        success_imported_count+=1
+    else:
+        print("官启目录下的.minecraft文件夹已经添加！", file = sys.stderr)
 
     if os.path.exists(f"{launcher_path}{os.sep}PCL"):
         try:
